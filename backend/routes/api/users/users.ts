@@ -1,18 +1,32 @@
-import { Router } from 'express';
+import { Router } from "express";
 
-import auth from '../../../middlewares/auth';
-import ctrlTryCatchWrapper from '../../../helpers/ctrlTryCatchWrapper';
-import ctrls from '../../../controllers/auth';
+import { auth } from "../../../middlewares/auth";
+import ctrlTryCatchWrapper from "../../../helpers/ctrlTryCatchWrapper";
+import ctrls from "../../../controllers/auth";
+import { uploadAvatar } from "../../../middlewares/auth";
 const router = Router();
 
-router.get('/logout', auth, ctrlTryCatchWrapper(ctrls.logout));
+router.get("/logout", auth, ctrlTryCatchWrapper(ctrls.logout));
 
-router.get('/current', auth, ctrlTryCatchWrapper(ctrls.getCurrent));
+router.get("/current", auth, ctrlTryCatchWrapper(ctrls.getCurrent));
 
-router.post('/signup', ctrlTryCatchWrapper(ctrls.signup));
+router.post("/signup", ctrlTryCatchWrapper(ctrls.signup));
 
-router.post('/login', ctrlTryCatchWrapper(ctrls.login));
+router.post("/login", ctrlTryCatchWrapper(ctrls.login));
 
-router.patch('/', auth, ctrlTryCatchWrapper(ctrls.updateSubscription));
+router.patch("/", auth, ctrlTryCatchWrapper(ctrls.setSubscription));
 
+router.patch(
+  "/avatars",
+  auth,
+  uploadAvatar.single("avatar"),
+  ctrlTryCatchWrapper(ctrls.setAvatar)
+);
+
+router.get(
+  "/verify/:verificationToken",
+  ctrlTryCatchWrapper(ctrls.verifyEmail)
+);
+
+router.post("/verify", ctrlTryCatchWrapper(ctrls.resendVerifyEmail));
 export default router;
